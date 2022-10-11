@@ -840,7 +840,7 @@ local rule configure ( version ? : cmd-or-prefix ? : includes * : libraries ? :
     #
     debug-message "Checking for NumPy..." ;
     local full-cmd = "import sys; sys.stderr = sys.stdout; import numpy; print(numpy.get_include())" ;
-    local full-cmd = $(interpreter-cmd)" -c \"$(full-cmd)\"" ;
+    local full-cmd = \"$(interpreter-cmd)\"" -c \"$(full-cmd)\"" ;
     debug-message "running command '$(full-cmd)'" ;
     local result = [ SHELL $(full-cmd) : strip-eol : exit-status ] ;
     if $(result[2]) = 0

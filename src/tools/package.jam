@@ -52,7 +52,7 @@ class package-paths
     import path ;
     rule __init__ ( default-prefix )
     {
-        local explicit-options = [ MATCH --(prefix|bindir|libdir|includedir|datarootdir)=.*
+        local explicit-options = [ MATCH --(prefix|bindir|libdir|includedir|datarootdir|cmakedir)=.*
           : [ modules.peek : ARGV ] ] ;
         self.has-$(explicit-options) = true ;
         if prefix in $(explicit-options)
@@ -64,6 +64,7 @@ class package-paths
             option.set libdir : ;
             option.set includedir : ;
             option.set datarootdir : ;
+            option.set cmakedir : ;
         }
 
         handle-path prefix : $(default-prefix) ;
@@ -71,6 +72,21 @@ class package-paths
         handle-path bindir : $(self.prefix)/bin ;
         handle-path includedir : $(self.prefix)/include ;
         handle-path datarootdir : $(self.prefix)/share ;
+        handle-cmake-path cmakedir : $(self.prefix)/lib/cmake ;
+    }
+
+    local rule handle-cmake-path ( option : default-value )
+    {
+        local opt = [ option.get $(option) ] ;
+        if $(opt)
+        {
+            opt = [ path.root [ path.make $(opt) ] [ path.pwd ] ] ;
+        }
+        else
+        {
+            opt = $(default-value) ;
+        }
+        self.$(option) = $(opt) ;
     }
 
     local rule handle-path ( option : default-value )
@@ -110,6 +126,11 @@ class package-paths
     rule datarootdir ( )
     {
         return $(self.datarootdir) ;
+    }
+
+    rule cmakedir ( )
+    {
+        return $(self.cmakedir) ;
     }
 
     rule get ( option )
